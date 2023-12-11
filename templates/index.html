@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenAI Image Analysis</title>
+</head>
+<body>
+    <h1>Upload an Image for Analysis</h1>
+    <form id="upload-form">
+        <input type="text" name="prompt" placeholder="Enter your prompt here" required>
+        <input type="file" name="image" required>
+        <button type="submit">Upload and Analyze</button>
+    </form>
+    <div id="results">
+        <p id="analysis-text"></p>
+        <audio id="result-audio" controls></audio>
+    </div>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/process_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.audio_path) {
+                    document.getElementById('result-audio').src = data.audio_path;
+                    document.getElementById('analysis-text').textContent = data.analysis_text;
+                } else {
+                    alert('Error processing image');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
